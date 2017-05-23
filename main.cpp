@@ -2,62 +2,147 @@
 
 #include <utility>
 #include <iostream>
+#include <vector>
 
-#include "dlib/dlib/matrix.h"
+#include <Eigen/Dense>
 
-using namespace dlib;
+#include "lattice.hpp"
+#include "input_output.hpp"
+
+using namespace Eigen;
+
+
 
 int main() {
-	/* 
-	Vec2<double> a = Vec2<double>(std::make_pair(2,1) );
 	
-	Vec2<double> b = Vec2<double>(2,2);
+	//the simulation input/output
+	InputOutput simuIO = InputOutput("kagome_config.cfg");
 	
-	std::cout << "first vector: " << a << std::endl;
+	simuIO.ReadConfig();
 	
-	std::cout << "second vector: " << b << std::endl;
+	//lattice spacing
+	int d = 1;
 	
-	Vec2<double> c= a- b;
+	//hopping
+	double t = 3;
 	
-	c+= a;
+	//on-site energy
+	double U = 4*t;
 	
-	Vec2<double> d = -b;
+	//dimensionality
+	int bands = 3;
 	
-	d = 1.0*d + -b;
+	int dim = 2;
 	
-	std::cout << "sum vector: " << c << std::endl;
+	double mu_up= 4;
+	double mu_down = 4;
 	
-	std::cout << "vector d: " << d << std::endl; */
+	//temperature
+	int NT = 15;
+	VectorXf T= VectorXf::LinSpaced(NT,1,10);
 	
 	
-	//time for dlib matrix stuff
 	
-	dlib::matrix<double,3,1> y;
 	
-	dlib::matrix<double,3,3> M;
+	//lattice basis vectors
+	Vector2f a1, a2;
+	a1 << 1,0;
+	a2 << 0.5, sqrt(3)/2;
 	
-	M = 1, 2,3,
-		2, 3, 4,
-		4, 6, 7;
+	a1 = a1*d;
+	a2 = a2*d;
+	
+	MatrixXf B(2,2);
+	B.col(0) << a1;
+	B.col(1) << a2;
+	
+	
+	//gathering the coupling vectors
+	//  R = r_aa r_ba r_ca
+	//		r_ab r_bb r_cb
+	//		r_ac r_bc r_cc
 		
-	y = 3,4,5;
+	Vector2f r_AB = a1/2;
+	Vector2f r_BA = -r_AB;
+	Vector2f r_AC = a2/2;
+	Vector2f r_CA = -r_AC;
+	Vector2f r_CB= (a1-a2)/2;
+	Vector2f r_BC = -r_CB;
 	
-	dlib::matrix<double> x = dlib::inv(M)*y;
+	MatrixXf R(dim*bands,bands);
+	R << Vector2f::Zero(dim) , r_BA, r_CA,
+		r_AB, Vector2f::Zero(dim), r_CB,
+		r_AC, r_BC, Vector2f::Zero(dim); 
+
+		
+	/** Hopping matrix	
+	t = tAA tBA tCA
+		tAB tBB tCB
+		tAC tBC tCC	
+	**/
+	MatrixXf t_matrix(bands,bands);
+	t_matrix << 0, -t,-t,
+				-t, 0, -t,
+				-t, -t, 0;
 	
-	std::cout << "x: \n" << x << std::endl;		
+	Lattice lattice = Lattice(B, R, t_matrix);	
 	
-	std::cout <<  "M: \n" << M << std::endl;
+	std::cout << "R:\n" << R << std::endl;
 	
-	dlib::matrix<double> A = dlib::diag(M);
 	
-	std::cout <<  "A: \n" << A << std::endl;	
+	/*VectorXf k(2);
+	k << 1,0;	
 	
-	eigenvalue_decomposition<matrix<double>> B = eigenvalue_decomposition<matrix<double>>(M);
+	MatrixXcf H_kin = lattice.KineticHamiltonian(k);*/
 	
-	//complex_matrix<std::complex<double>>  = complex_matrix<std::complex<double>>(M); // = B.get_eigenvalues();
+	//std::cout << "H_kin:\n" << H_kin << std::endl;
 	
-	//std::cout <<  "C: \n" << A << std::endl;
+	//lattice.EigenvaluesOneK(k);
 	
-	return 0;
+	MatrixXf dispersionandk = lattice.CalculateDispersion();
+	
+	
+	
+	
+	//writing the results to file
+	std::vector<std::string> headers;
+	headers.push_back("kx");headers.push_back("ky");
+	headers.push_back("E1");headers.push_back("E2");headers.push_back("E3");
+	simuIO.WriteResults("testi", headers, dispersionandk);
+	
+	
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
