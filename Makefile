@@ -46,11 +46,11 @@ OBJECTS = jsoncpp.o main.o
 all: $(OBJECTS)
 	$(CXX) $(CPPFLAGS) $(OBJECTS) -o $(EXECUTABLE)
 
-jsoncpp.o: dist/jsoncpp.cpp dist/json/json.h  dist/json/json-forwards.h 
-	 $(CXX) -c $(CPPFLAGS) dist/jsoncpp.cpp dist/json/json.h  dist/json/json-forwards.h 
+jsoncpp.o: dist/jsoncpp.cpp
+	 $(CXX) -c $(CPPFLAGS) dist/jsoncpp.cpp 
 	 
-main.o: main.cpp lattice.hpp input_output.hpp
-	$(CXX) -c $(CPPFLAGS) -I ./eigen/ main.cpp lattice.hpp input_output.hpp
+main.o: main.cpp 
+	$(CXX) -c $(CPPFLAGS) -I ./eigen/ main.cpp
 
 	
 clean:
