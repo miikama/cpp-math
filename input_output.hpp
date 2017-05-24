@@ -7,6 +7,7 @@
 
 #include <Eigen/Dense>
 #include "dist/json/json.h"
+#include "options.hpp"
 
 using namespace Eigen;
 
@@ -48,26 +49,80 @@ public:
 	
 	
 	//read configuration given configuration object
-	void ReadConfig(){
+	Options ReadConfig(){
 		
-		std::ifstream ifs("kagome_config.cfg");
+		Options opt;
+		
+		std::ifstream ifs(config_name);
 		Json::Reader reader;
 		Json::Value obj;
 		reader.parse(ifs, obj); // reader can also read strings
-		const Json::Value& characters = obj["characters"]; // array of characters
-		for (int i = 0; i < characters.size(); i++){
-			std::cout << "    name: " << characters[i]["name"].asString();
-			std::cout << " chapter: " << characters[i]["chapter"].asUInt();
-			std::cout << std::endl;
-		}
+		
+		//the save file name 
+		std::string save_name = obj["save_file"].asString();
+		float U = obj["U"].asFloat();
+		float t = obj["t"].asFloat();
+		
+		
+		
+		//saving the basis vectors from config
 		Json::Value& basis = obj["basis_vectors"];
 		
-		int a1x = basis["a1"]["x"].asUInt();
-		int a1y = basis["a1"]["y"].asUInt();
-		Eigen::Vector2i a1;
-		a1 << a1x,a1y;
+		int dim = basis.size();
 		
-		std::cout << "ai\n" << a1 << std::endl;
+		MatrixXf basis_vectors(dim,dim );
+		for (int i = 0; i < basis.size(); i++) {
+			float x = basis[i]["x"].asFloat();
+			float y = basis[i]["y"].asFloat();
+			basis_vectors.col(i) << x,y;
+		}
+		
+		//saving t_matrix
+		Json::Value& t_mat = obj["t_matrix"];
+		int bands = t_mat.size();
+		MatrixXf t_matrix(bands,bands );	
+		for (int i = 0; i < bands; i++) {
+			for (int j = 0; j < bands; j++){
+				t_matrix(i,j) = t_mat[i][j].asFloat();
+			}
+		}
+		
+
+		//saving R matrix
+		Json::Value& R_mat = obj["r_matrix"];	
+		
+		MatrixXf r_matrix(bands*dim,bands );	
+		for (int i = 0; i < bands; i++) {
+			for (int j = 0; j < bands; j++){
+				MatrixXf vec = MatrixXf::Zero(dim,1);
+				Json::Value& components = R_mat[i][j];
+				for(int m=0; m < components.size(); m++){
+					float factor = components[m]["factor"].asFloat();
+					vec += factor*basis_vectors.col( components[m]["b_vec"].asInt()-1 ) ;					
+				}
+				r_matrix.block(i*dim,j,dim,1) << vec;				
+			}
+		}
+		
+		
+		//saving read values to option object
+		opt.save_file = save_name;
+		opt.U = U;
+		opt.t = t;
+		opt.dim = dim;
+		opt.bands = bands;
+		opt.basis = basis_vectors;
+		opt.R = r_matrix;
+		opt.t_matrix = t_matrix;
+		
+		
+	
+		return opt;
+		
+		
+		std::cout << "basis\n" << basis_vectors << std::endl;
+		std::cout << "t_matrix\n" << t_matrix << std::endl;
+		std::cout << "R matrix\n" << r_matrix << std::endl;
 	}
 	
 };

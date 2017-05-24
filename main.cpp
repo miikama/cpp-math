@@ -1,4 +1,3 @@
-#include "matrix.hpp"
 
 #include <utility>
 #include <iostream>
@@ -8,6 +7,7 @@
 
 #include "lattice.hpp"
 #include "input_output.hpp"
+#include "options.hpp"
 
 using namespace Eigen;
 
@@ -16,23 +16,24 @@ using namespace Eigen;
 int main() {
 	
 	//the simulation input/output
-	InputOutput simuIO = InputOutput("kagome_config.cfg");
+	InputOutput simuIO = InputOutput("kagome_config.json");
 	
-	simuIO.ReadConfig();
+	
+	//readconfig would ideally return an option object which has all the parameters used here
+	Options opt = simuIO.ReadConfig();
 	
 	//lattice spacing
 	int d = 1;
 	
 	//hopping
-	double t = 3;
+	float t = opt.t;
 	
 	//on-site energy
-	double U = 4*t;
+	float U = opt.U;
 	
 	//dimensionality
-	int bands = 3;
-	
-	int dim = 2;
+	int bands = opt.bands;	
+	int dim = opt.dim;
 	
 	double mu_up= 4;
 	double mu_down = 4;
@@ -41,10 +42,29 @@ int main() {
 	int NT = 15;
 	VectorXf T= VectorXf::LinSpaced(NT,1,10);
 	
+	//creating the lattice
+	Lattice lattice = Lattice(opt.basis, opt.R, opt.t_matrix);	
+	
+	std::cout << "basis:\n" << opt.basis << std::endl;
+	std::cout << "R:\n" << opt.R << std::endl;
+	std::cout << "t:\n" << opt.t_matrix << std::endl;
+	
+	MatrixXf dispersionandk = lattice.CalculateDispersion();
 	
 	
 	
-	//lattice basis vectors
+	//writing the results to file
+	std::vector<std::string> headers;
+	headers.push_back("kx");headers.push_back("ky");
+	headers.push_back("E1");headers.push_back("E2");headers.push_back("E3");
+	simuIO.WriteResults("testi", headers, dispersionandk);
+	
+	
+	
+}
+
+
+/* 	//lattice basis vectors
 	Vector2f a1, a2;
 	a1 << 1,0;
 	a2 << 0.5, sqrt(3)/2;
@@ -75,44 +95,15 @@ int main() {
 		r_AC, r_BC, Vector2f::Zero(dim); 
 
 		
-	/** Hopping matrix	
-	t = tAA tBA tCA
-		tAB tBB tCB
-		tAC tBC tCC	
-	**/
+	// Hopping matrix	
+	//t = tAA tBA tCA
+	//	tAB tBB tCB
+	//	tAC tBC tCC	
+	
 	MatrixXf t_matrix(bands,bands);
 	t_matrix << 0, -t,-t,
 				-t, 0, -t,
-				-t, -t, 0;
-	
-	Lattice lattice = Lattice(B, R, t_matrix);	
-	
-	std::cout << "R:\n" << R << std::endl;
-	
-	
-	/*VectorXf k(2);
-	k << 1,0;	
-	
-	MatrixXcf H_kin = lattice.KineticHamiltonian(k);*/
-	
-	//std::cout << "H_kin:\n" << H_kin << std::endl;
-	
-	//lattice.EigenvaluesOneK(k);
-	
-	MatrixXf dispersionandk = lattice.CalculateDispersion();
-	
-	
-	
-	
-	//writing the results to file
-	std::vector<std::string> headers;
-	headers.push_back("kx");headers.push_back("ky");
-	headers.push_back("E1");headers.push_back("E2");headers.push_back("E3");
-	simuIO.WriteResults("testi", headers, dispersionandk);
-	
-	
-	
-}
+				-t, -t, 0; */
 
 
 
