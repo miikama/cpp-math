@@ -50,7 +50,8 @@ jsoncpp.o: dist/jsoncpp.cpp
 	 $(CXX) -c $(CPPFLAGS) dist/jsoncpp.cpp 
 	 
 main.o: main.cpp 
-	$(CXX) -c $(CPPFLAGS) -I ./eigen/ main.cpp 
+	$(CXX) -c $(CPPFLAGS) -I ./eigen/ main.cpp
+
 
 	
 clean:
