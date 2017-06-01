@@ -13,10 +13,17 @@ using namespace Eigen;
 
 
 
-int main() {
+int main(int argc, char *argv[]) {
+	
+	
+	//enables giving config file as command line argument
+	std::string config_name = "kagome_config.json";
+	if(argc > 1 ){
+		config_name = argv[1];
+	}
 	
 	//the simulation input/output
-	InputOutput simuIO = InputOutput("kagome_config.json");
+	InputOutput simuIO = InputOutput(config_name);
 	
 	
 	//readconfig would ideally return an option object which has all the parameters used here
@@ -49,7 +56,7 @@ int main() {
 	std::cout << "R:\n" << opt.R << std::endl;
 	std::cout << "t:\n" << opt.t_matrix << std::endl;
 	
-	MatrixXf dispersionandk = lattice.CalculateDispersion();
+	MatrixXf dispersionandk = lattice.CalculateDispersion(opt.k_min, opt.k_max);
 	
 	
 	

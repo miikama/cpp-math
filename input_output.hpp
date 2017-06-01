@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <memory>
 
 #include <Eigen/Dense>
 #include "dist/json/json.h"
@@ -62,7 +64,8 @@ public:
 		std::string save_name = obj["save_file"].asString();
 		float U = obj["U"].asFloat();
 		float t = obj["t"].asFloat();
-		
+		float k_min = obj["k_min"].asFloat();
+		float k_max = obj["k_max"].asFloat();
 		
 		
 		//saving the basis vectors from config
@@ -89,7 +92,13 @@ public:
 		
 
 		//saving R matrix
-		Json::Value& R_mat = obj["r_matrix"];	
+		Json::Value& R_mat = obj["r_matrix"];
+
+		/* for lattices that have n different couplings between same lattice sites,
+		  the different couplings are stored in r_matrix and all the different couplings 
+		  are stored in r_matrix_vector
+		 */
+		std::vector<std::shared_ptr<MatrixXf>> r_matrix_vector;
 		
 		MatrixXf r_matrix(bands*dim,bands );	
 		for (int i = 0; i < bands; i++) {
@@ -111,6 +120,9 @@ public:
 		opt.t = t;
 		opt.dim = dim;
 		opt.bands = bands;
+		opt.k_min = k_min;
+		opt.k_max = k_max;
+		
 		opt.basis = basis_vectors;
 		opt.R = r_matrix;
 		opt.t_matrix = t_matrix;

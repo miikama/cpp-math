@@ -33,6 +33,10 @@ public:
 	float mu_up= 4;
 	float mu_down = 4;
 	
+	//range of calculated k values
+	float k_min = 0;
+	float k_max = 2*3.14;
+	
 	//lattice basis vectors
 	MatrixXf basis;
 	

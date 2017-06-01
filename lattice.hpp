@@ -79,7 +79,7 @@ public:
 				MatrixXcf coupling = dot_ra.array().exp() + neg_dot_ra.array().exp();
 				
 				//the coupling is multiplied by corresponding t
-				H_kin.block(i,j,1,1) = t_matrix(i,j) * coupling;
+				H_kin.block(i,j,1,1) = -t_matrix(i,j) * coupling;
 				
 			}
 		}
@@ -103,11 +103,11 @@ public:
 	
 	//calculates the dispersion over the first brillouin zone
 	//returns a matrix of [kx ky E1 E2 E3]
-	MatrixXf CalculateDispersion(){
+	MatrixXf CalculateDispersion(const float& k_min, const float& k_max){
 		
 		int Nk = 20;
-		VectorXf kx = VectorXf::LinSpaced(Nk,-M_PI,M_PI);
-		VectorXf ky = VectorXf::LinSpaced(Nk,-M_PI,M_PI);
+		VectorXf kx = VectorXf::LinSpaced(Nk,k_min,k_max);
+		VectorXf ky = VectorXf::LinSpaced(Nk,k_min,k_max);
 		
 		MatrixXf k_values(Nk*Nk, dim);
 		
@@ -131,31 +131,7 @@ public:
 		
 	}
 	
-	/* int points = 20;
-		VectorXf kx = VectorXf::LinSpaced(points,-M_PI, M_PI)
-		for(auto i = kx.begin(); i !=kx.end(); i++){
-			for(auto j = kx.begin(); i !=kx.end(); i++){
-				
-			}
-		} */
-	
-	
-	/* 
-	Vector2f r_AB = a1/2;
-	Vector2f r_BA = -r_AB;
-	Vector2f r_AC = a2/2;
-	Vector2f r_CA = -r_AC;
-	Vector2f r_CB= (a1-a2)/2;
-	Vector2f r_BC = -r_CB;
-	
-	MatrixXf R(6,3);
-	R << Vector2f::Zero(2) , r_BA, r_CA,
-		r_AB, Vector2f::Zero(2), r_CB,
-		r_AC, r_BC, Vector2f::Zero(2); 	
-	 */
-	
-	
-	
+		
 };
 
 
