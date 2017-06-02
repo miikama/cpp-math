@@ -5,16 +5,32 @@
 
 #include <Eigen/Dense>
 
+
 #include "lattice.hpp"
 #include "input_output.hpp"
 #include "options.hpp"
+#include "free_energy.hpp"
 
 using namespace Eigen;
 
 
+class MyFunction : public cppoptlib::Problem<float> {
+	//using typename cppoptlib::Problem<double>::Scalar;
+	//using typename cppoptlib::Problem<double>::TVector;
+	
+public:
+	float value(const cppoptlib::Problem<float>::TVector& x){
+		float result = 0;
+		for( int i = 0; i < x.size(); i++){
+			result += x(i)*x(i);			
+		}
+		return result;
+	}
+	
+};
+
 
 int main(int argc, char *argv[]) {
-	
 	
 	//enables giving config file as command line argument
 	std::string config_name = "kagome_config.json";
@@ -53,7 +69,7 @@ int main(int argc, char *argv[]) {
 	Lattice lattice = Lattice(opt.basis, opt.R, opt.t_matrix);	
 	
 	std::cout << "basis:\n" << opt.basis << std::endl;
-	std::cout << "R:\n" << opt.R << std::endl;
+	//std::cout << "R:\n" << opt.R << std::endl;
 	std::cout << "t:\n" << opt.t_matrix << std::endl;
 	
 	MatrixXf dispersionandk = lattice.CalculateDispersion(opt.k_min, opt.k_max);
@@ -65,6 +81,17 @@ int main(int argc, char *argv[]) {
 	headers.push_back("kx");headers.push_back("ky");
 	headers.push_back("E1");headers.push_back("E2");headers.push_back("E3");
 	simuIO.WriteResults("testi", headers, dispersionandk);
+	
+	lattice.SaveKineticHamiltonians(opt.k_min, opt.k_max);
+	
+	
+	MyFunction f;
+	cppoptlib::BfgsSolver<MyFunction> solver;
+	VectorXf x(3); x << 2,3,4;
+	solver.minimize(f,x);
+	
+	std::cout << "minimum: " << x << std::endl;
+	
 	
 	
 	

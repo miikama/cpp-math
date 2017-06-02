@@ -2,6 +2,9 @@
 #ifndef OPTIONS_HPP
 #define OPTIONS_HPP
 
+#include <memory>
+#include <vector>
+
 #include <Eigen/Dense>
 
 using namespace Eigen;
@@ -44,7 +47,7 @@ public:
 	MatrixXf t_matrix;
 	
 	//contains all vector pointing from A -> B
-	MatrixXf R;
+	std::vector<std::shared_ptr<MatrixXf>> R;
 	
 };
 

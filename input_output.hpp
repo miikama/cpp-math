@@ -100,17 +100,44 @@ public:
 		 */
 		std::vector<std::shared_ptr<MatrixXf>> r_matrix_vector;
 		
-		MatrixXf r_matrix(bands*dim,bands );	
+		MatrixXf r_matrix(bands*dim,bands );
+		//i goes from 0 to bands
+		int most_comps = 0;
 		for (int i = 0; i < bands; i++) {
+			//j goes from 0 to bands
 			for (int j = 0; j < bands; j++){
-				MatrixXf vec = MatrixXf::Zero(dim,1);
+				
 				Json::Value& components = R_mat[i][j];
-				for(int m=0; m < components.size(); m++){
-					float factor = components[m]["factor"].asFloat();
-					vec += factor*basis_vectors.col( components[m]["b_vec"].asInt()-1 ) ;					
+				for(int n=0; n < components.size(); n++){
+					
+					//the length of r_matrix_vector is increased when we notice more couplings exist
+					//initialize it to zeros
+					if( n == most_comps) {
+						std::shared_ptr<MatrixXf> point (new MatrixXf(bands*dim,bands ));
+						*point = MatrixXf::Zero(bands*dim,bands);
+						r_matrix_vector.push_back(point);
+						most_comps += 1;
+					}
+
+					//r_matrix = MatrixXf::Zero(bands*dim,bands);
+					MatrixXf vec = MatrixXf::Zero(dim,1);
+					
+					for(int m=0; m < components[n].size(); m++){
+						float factor = components[n][m]["factor"].asFloat();
+						vec += factor*basis_vectors.col( components[n][m]["b_vec"].asInt()-1 ) ;					
+					}
+					(*r_matrix_vector[n]).block(i*dim,j,dim,1) << vec;
+					
+					//r_matrix.block(i*dim,j,dim,1) << vec;
+					//std::shared_ptr<MatrixXf> point (new MatrixXf(bands*dim,bands ));
+					//*point = r_matrix;
+					//r_matrix_vector.push_back(point);
 				}
-				r_matrix.block(i*dim,j,dim,1) << vec;				
 			}
+		}
+		std::cout << "r_matriisit, koko: " << r_matrix_vector.size() << std::endl;
+		for (int i = 0; i < r_matrix_vector.size(); i++){
+			std::cout << *r_matrix_vector[i] << std::endl;
 		}
 		
 		
@@ -124,7 +151,7 @@ public:
 		opt.k_max = k_max;
 		
 		opt.basis = basis_vectors;
-		opt.R = r_matrix;
+		opt.R = r_matrix_vector;
 		opt.t_matrix = t_matrix;
 		
 		
@@ -132,9 +159,9 @@ public:
 		return opt;
 		
 		
-		std::cout << "basis\n" << basis_vectors << std::endl;
-		std::cout << "t_matrix\n" << t_matrix << std::endl;
-		std::cout << "R matrix\n" << r_matrix << std::endl;
+		//std::cout << "basis\n" << basis_vectors << std::endl;
+		//std::cout << "t_matrix\n" << t_matrix << std::endl;
+		//std::cout << "R matrix\n" << r_matrix << std::endl;
 	}
 	
 };

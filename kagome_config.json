@@ -17,19 +17,19 @@
 	"r_matrix":
 	[ 	
 		[
-		[ ],
-		[ {"factor":-0.5,"b_vec":1} ],
-		[ {"factor":-0.5,"b_vec":2} ] 
+		[ [ ] ],
+		[ [ {"factor":-0.5,"b_vec":1}]  ],
+		[ [ {"factor":-0.5,"b_vec":2}]  ] 
 		],
 		[
-		[ {"factor":0.5,"b_vec":1} ],
-  		[  ],
-		[  {"factor":0.5,"b_vec":1},{"factor":-0.5,"b_vec":2} ]
+		[ [ {"factor":0.5,"b_vec":1}]  ],
+  		[ [ ] ],
+		[ [ {"factor":0.5,"b_vec":1},{"factor":-0.5,"b_vec":2} ] ]
 		],
 		[
-		[ {"factor":0.5,"b_vec":2} ],
-		[ {"factor":-0.5,"b_vec":1},{"factor":0.5,"b_vec":2} ],
-		[  ]
+		[ [ {"factor":0.5,"b_vec":2} ] ],
+		[ [ {"factor":-0.5,"b_vec":1},{"factor":0.5,"b_vec":2} ] ],
+		[ [ ] ]
 		]	
 	]
 }

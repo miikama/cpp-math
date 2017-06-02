@@ -38,7 +38,7 @@
 	
 		
 CXX=g++
-CPPFLAGS= -O2 -std=c++11
+CPPFLAGS= -O2 -std=c++11 -g
 SOURCES=dist/jsoncpp.cpp main.cpp 
 EXECUTABLE=main
 OBJECTS = jsoncpp.o main.o
