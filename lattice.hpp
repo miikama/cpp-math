@@ -70,6 +70,14 @@ public:
 	//destructor
 	~Lattice() {};
 	
+	int Bands(){
+		return bands;
+	}
+	
+	int Dim(){
+		return dim;
+	}
+	
 	
 	//calculates the kinetic hamiltonian for a given k
 	MatrixXcf KineticHamiltonian(const VectorXf& k){
@@ -107,6 +115,7 @@ public:
 		return H_kin;	
 	}
 	
+	//this saves the h_kin_matrics
 	void SaveKineticHamiltonians(const float& k_min, const float& k_max){
 		int Nk = 20;
 		VectorXf kx = VectorXf::LinSpaced(Nk,k_min,k_max);

@@ -66,6 +66,11 @@ public:
 		float t = obj["t"].asFloat();
 		float k_min = obj["k_min"].asFloat();
 		float k_max = obj["k_max"].asFloat();
+		int n_T = obj["n_T"].asInt();
+		opt.mu_min = obj["mu_min"].asFloat();
+		opt.mu_max = obj["mu_max"].asFloat();
+		opt.n_mu = obj["n_mu"].asInt();
+		
 		
 		
 		//saving the basis vectors from config
@@ -149,6 +154,7 @@ public:
 		opt.bands = bands;
 		opt.k_min = k_min;
 		opt.k_max = k_max;
+		opt.n_T = n_T;
 		
 		opt.basis = basis_vectors;
 		opt.R = r_matrix_vector;

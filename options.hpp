@@ -40,6 +40,14 @@ public:
 	float k_min = 0;
 	float k_max = 2*3.14;
 	
+	//number of temperatures
+	int n_T = 1;
+	
+	//min and max chemical potential and number of points
+	float mu_min = -3;
+	float mu_max = 3;
+	float n_mu = 1;
+	
 	//lattice basis vectors
 	MatrixXf basis;
 	

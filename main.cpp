@@ -9,7 +9,7 @@
 #include "lattice.hpp"
 #include "input_output.hpp"
 #include "options.hpp"
-#include "free_energy.hpp"
+#include "crit_temperature_solver.hpp"
 
 using namespace Eigen;
 
@@ -74,6 +74,32 @@ int main(int argc, char *argv[]) {
 	
 	MatrixXf dispersionandk = lattice.CalculateDispersion(opt.k_min, opt.k_max);
 	
+	//moving on to free energy
+	CritTemperatureSolver tcsolver(lattice,opt);
+	
+	//first bands elements are real part and latter bands elements imaginary
+	MatrixXf delta0 = 0.1 * MatrixXf::Zero(bands,1);
+	
+	
+	tcsolver.SetParameters( -1,0.1, 1, 1);
+	
+	std::cout << "free_energy: " << tcsolver.free_energy(delta0) << std::endl;
+	
+	std::cout << "filling: " << tcsolver.filling(1,delta0) << std::endl;
+	
+	float filling = tcsolver.filling(1,delta0);
+	std::cout << filling << std::endl;
+	
+	VectorXf delta = VectorXf::Zero(bands);
+
+	tcsolver.free_energy_functional.minimize(tcsolver.free_energy,delta);
+	
+	std::cout << "free_energy: " << tcsolver.free_energy(delta0) << std::endl;
+	
+	
+
+
+	
 	
 	
 	//writing the results to file
@@ -90,7 +116,6 @@ int main(int argc, char *argv[]) {
 	VectorXf x(3); x << 2,3,4;
 	solver.minimize(f,x);
 	
-	std::cout << "minimum: " << x << std::endl;
 	
 	
 	
