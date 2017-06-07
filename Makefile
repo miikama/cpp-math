@@ -44,13 +44,13 @@ EXECUTABLE=main
 OBJECTS = jsoncpp.o main.o
 
 all: $(OBJECTS)
-	$(CXX) $(CPPFLAGS) $(OBJECTS) -o $(EXECUTABLE)
+	$(CXX) $(CPPFLAGS) $(OBJECTS) -o $(EXECUTABLE) -lboost_iostreams -lboost_system -lboost_filesystem
 
 jsoncpp.o: dist/jsoncpp.cpp
 	 $(CXX) -c $(CPPFLAGS) dist/jsoncpp.cpp 
 	 
 main.o: main.cpp 
-	$(CXX) -c $(CPPFLAGS) -I ./eigen/ main.cpp
+	$(CXX) -c $(CPPFLAGS) -I ./eigen/ main.cpp 
 
 
 	

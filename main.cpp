@@ -10,6 +10,7 @@
 #include "input_output.hpp"
 #include "options.hpp"
 #include "crit_temperature_solver.hpp"
+#include "gnuplot-iostream/gnuplot-iostream.h"
 
 using namespace Eigen;
 
@@ -39,32 +40,16 @@ int main(int argc, char *argv[]) {
 	}
 	
 	//the simulation input/output
-	InputOutput simuIO = InputOutput(config_name);
+	InputOutput simuIO = InputOutput(config_name);	
 	
-	
-	//readconfig would ideally return an option object which has all the parameters used here
+	//readconfig returns a config object opt, that contains data read from json config file
 	Options opt = simuIO.ReadConfig();
-	
-	//lattice spacing
-	int d = 1;
-	
-	//hopping
-	float t = opt.t;
-	
-	//on-site energy
-	float U = opt.U;
-	
+
+
 	//dimensionality
 	int bands = opt.bands;	
 	int dim = opt.dim;
-	
-	double mu_up= 4;
-	double mu_down = 4;
-	
-	//temperature
-	int NT = 15;
-	VectorXf T= VectorXf::LinSpaced(NT,1,10);
-	
+
 	//creating the lattice
 	Lattice lattice = Lattice(opt.basis, opt.R, opt.t_matrix);	
 	
@@ -77,29 +62,19 @@ int main(int argc, char *argv[]) {
 	//moving on to free energy
 	CritTemperatureSolver tcsolver(lattice,opt);
 	
-	//first bands elements are real part and latter bands elements imaginary
-	MatrixXf delta0 = 0.1 * MatrixXf::Zero(bands,1);
-	
-	
-	tcsolver.SetParameters( -1,0.1, 1, 1);
-	
-	std::cout << "free_energy: " << tcsolver.free_energy(delta0) << std::endl;
-	
-	std::cout << "filling: " << tcsolver.filling(1,delta0) << std::endl;
-	
-	float filling = tcsolver.filling(1,delta0);
-	std::cout << filling << std::endl;
-	
-	VectorXf delta = VectorXf::Zero(bands);
+	//initial guess for minimizing delta
+	VectorXf delta = 0.1*VectorXf::Ones(bands);
 
 	tcsolver.free_energy_functional.minimize(tcsolver.free_energy,delta);
 	
-	std::cout << "free_energy: " << tcsolver.free_energy(delta0) << std::endl;
-	
-	
+	//testing minimizing delta for one T
+	//MatrixXf min_delta = tcsolver.MinimizeDelta(0.1, 1.0);
 
-
+	//testing on looping over temperatures
+	//tcsolver.LoopT(opt.mu_max);
 	
+	//testing on looping over chemical potentials
+	tcsolver.LoopMu();
 	
 	
 	//writing the results to file

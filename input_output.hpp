@@ -70,8 +70,13 @@ public:
 		opt.mu_min = obj["mu_min"].asFloat();
 		opt.mu_max = obj["mu_max"].asFloat();
 		opt.n_mu = obj["n_mu"].asInt();
-		
-		
+		opt.plotting = obj["plotting"].asInt();
+		opt.max_iter = obj["max_iter"].asInt();
+		opt.xDelta = obj["xDelta"].asFloat();
+		opt.fDelta = obj["fDelta"].asFloat();
+		opt.condition = obj["condition"].asFloat();
+		opt.delta0 = obj["delta0"].asFloat();
+	
 		
 		//saving the basis vectors from config
 		Json::Value& basis = obj["basis_vectors"];

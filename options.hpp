@@ -23,18 +23,18 @@ public:
 	int d = 1;
 	
 	//hopping
-	float t = 3;
+	float t = 1;
 	
 	//on-site energy
-	float U = 4*t;
+	float U = -3*t;
 	
 	//dimensionality
 	int bands = 3;	
 	int dim = 2;
 	
 	//chemical potential
-	float mu_up= 4;
-	float mu_down = 4;
+	float mu_up= 1;
+	float mu_down = 1;
 	
 	//range of calculated k values
 	float k_min = 0;
@@ -46,7 +46,17 @@ public:
 	//min and max chemical potential and number of points
 	float mu_min = -3;
 	float mu_max = 3;
-	float n_mu = 1;
+	int n_mu = 1;
+	
+	//do you want to plot 1 yes, 0 no
+	int plotting = 1;
+	
+	//minimization options
+	int max_iter = 300;
+	float xDelta = 0.005;
+	float fDelta = 0.005;
+	float condition = 0.0005;
+	float delta0 = 0.001;
 	
 	//lattice basis vectors
 	MatrixXf basis;

@@ -1,9 +1,14 @@
 {
 	"save_file":"kagome_lattice.txt", 
-	"t":3,
-	"U":4,
+	"t":1,
+	"U":-3,
 	"k_min":-3.14,
 	"k_max":3.14,
+	"n_T":15,
+	"mu_min":-3,
+	"mu_max":3,
+	"n_mu":20,	
+	"plotting":1,
 	"basis_vectors":
 	[
 		{"x":1,"y":0},
@@ -31,5 +36,10 @@
 		[ [ {"factor":-0.5,"b_vec":1},{"factor":0.5,"b_vec":2} ] ],
 		[ [ ] ]
 		]	
-	]
+	],
+	"max_iter":400,
+	"xDelta":1,
+	"fDelta":0.51,
+	"condition":10,
+	"delta0":0.15
 }
